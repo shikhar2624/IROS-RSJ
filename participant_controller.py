@@ -37,9 +37,9 @@ motor_left.setPosition(float('inf'))
 motor_right.setPosition(float('inf'))
 l1 = robot.getDevice('lidar_tilt')
 arm_1.setPosition(90.0*3.14159/180.0)
-arm_2.setPosition(90.0*3.14159/180.0)
-# arm_3.setPosition(90.0*3.14159/180.0)
-arm_4.setPosition(-45.0*3.14159/180.0) # -15.0 or 45.0
+arm_2.setPosition(45.0*3.14159/180.0)
+
+arm_4.setPosition(90.0*3.14159/180.0) # -15.0 or 45.0
 
 gps.enable(timestep)
 gps_ee.enable(timestep)
@@ -120,7 +120,11 @@ class DynWallFoll:
             # arm_2.setPosition(90.0*3.14159/180.0)
             # arm_3.setPosition(90.0*3.14159/180.0)
             # arm_4.setPosition(-45.0*3.14159/180.0) # -15.0 or 45.0
+        if(((len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0) and (len(Regions_Report["right_C"])!=0)) or ((len(Regions_Report["left_C"])!=0) and (len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0)) or ((len(Regions_Report["left_C"])!=0) and (len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0) and (len(Regions_Report["right_C"])!=0))):
 
+            print("enter 180 rotation ()()()()()()()()()()()")
+            motor_left.setVelocity(+4)
+            motor_right.setVelocity(-4)
 
         if len(self.frontArea) > 0:
                 self.check_wallfollow = 1
@@ -338,6 +342,8 @@ class DynWallFoll:
         # print(v , "angular velocity $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         self.n_ray = 0
         self.oa = 0
+        
+        
         if abs(v)>=0 and abs(v)<=0.05:
             self.index = 0
             print(v, 'stopping rotation and moving forward')
@@ -361,16 +367,20 @@ class DynWallFoll:
         else:
             if len(Regions_Report["left_C"]) > 0 or len(Regions_Report["left_R"]) > 0 or len(Regions_Report["right_C"]) > 0  or len(Regions_Report["right_L"]) > 0 :
                 vel = self.edge_avoidance()
-            if vel > 0.5 and self.check_edge == 1:
+            if vel > 0.4 and self.check_edge == 1:
                 motor_left.setVelocity(vel)
                 motor_right.setVelocity(vel/2)
-            elif vel > 0.5 and self.check_edge == 0:
+            elif vel > 0.4 and self.check_edge == 0:
                 motor_left.setVelocity(vel/2)
                 motor_right.setVelocity(vel)
-            else:
+            elif vel < 0.1 :
                 print("rotating after edge avoidance &*&*&*&*&*&*&*&*&*")
                 motor_left.setVelocity(0.5+3 * v)
                 motor_right.setVelocity(0.5- 3 * v)
+            else:
+                motor_left.setVelocity(2)
+                motor_right.setVelocity(2)
+
 
 
 
@@ -452,6 +462,13 @@ class DynWallFoll:
 
     def move(self):
         # if self.check_rotate == 1:
+        #     self.rotate_ray()
+        # if(((len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0) and (len(Regions_Report["right_C"])!=0)) or ((len(Regions_Report["left_C"])!=0) and (len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0)) or ((len(Regions_Report["left_C"])!=0) and (len(Regions_Report["left_R"])!=0) and (len(Regions_Report["front_L"])!=0) and (len(Regions_Report["front_C"])!=0) and (len(Regions_Report["front_R"])!=0) and (len(Regions_Report["right_L"])!=0) and (len(Regions_Report["right_C"])!=0))):
+
+        #     print("enter 180 rotation ()()()()()()()()()()()")
+        #     motor_left.setVelocity(+4)
+        #     motor_right.setVelocity(-4)
+        # else:
         #     self.rotate_ray()
         self.rotate_ray()
         
@@ -695,14 +712,21 @@ while robot.step(timestep) != -1:
     print("diff",diff)
     if(diff<0.05): #changed from 0.0005 to 0.001
         print("bot is stuck")
-        motor_left.setVelocity(-1)
-        motor_right.setVelocity(+1)
+        motor_left.setVelocity(-2)
+        motor_right.setVelocity(-2)
     else:
+        # if((len(Regions_Report["front_C"]) > 0) and (len(Regions_Report["front_L"]) > 0) and (len(Regions_Report["front_R"]) > 0) and (len(Regions_Report["left_R"]) > 0) and (len(Regions_Report["right_L"]) > 0) ):
+        #     print("enter 180 rotation ()()()()()()()()()()()")
+        #     motor_left.setVelocity(+4)
+        #     motor_right.setVelocity(-4)
+        # else:
+        #     DynWallFollObs.check()
+    
         DynWallFollObs.check()
-
     timeCount += 1
 
-    # DynWallFollObs.dynamic_region()
+
+    
 
     
     

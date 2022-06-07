@@ -1,5 +1,3 @@
-# iros2021challenge-controller-py
-
 This repository is part of the [2021 IROS-RSJ Robotic Challenge for Young Students](https://roboticslab-uc3m.github.io/challenge-iros2021)!
 IROS-RSJ
 The Challenge will use Webots for robot simulation (https://cyberbotics.com). It is easy to install on any computer, and many different programming languages can be used (templates for C++, Python and MATLAB will be provided). The robot used will be PAL Robotics TiaGo++ (https://pal-robotics.com/robots/tiago/).
